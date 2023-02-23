@@ -3,80 +3,103 @@ const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcryptjs")
 const Joi = require("joi")
 const multer = require('multer');
+const swaggerUI = require("swagger-ui-express")
+const swaggerJsDoc = require("swagger-jsdoc")
 const router = express.Router()
 
-const Article = require("./models/Article")
-const Like = require("./models/Likes")
-const Comment = require("./models/Comments")
-const Query = require("./models/Query")
-const Admin = require("./models/Admin")
-const User = require("./models/User")
+const Article = require("./models/articleModel")
+const Like = require("./models/likeModel")
+const Comment = require("./models/commentModel")
+const Query = require("./models/queryModel")
+const Admin = require("./models/adminModel")
+const User = require("./models/userModel")
 
 const adminAuth = require("./middleware/auth")
 const userAuth = require("./middleware/cAuth")
 
-// import { newComment } from "./controllers/Comments";
-
-const { validateSignUp, validateLogIn } = require("./middleware/validator")
+const { validateSignUp, validateLogIn, 
+  validateArticle, validateComment, validateQuery, validateLike } = require("./middleware/validator")
 
 const JWT_SECRET = "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'uploads/')
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, new Date().toISOString().replace(/[\/\\:]/g, "_") + file.originalname)
-//   }
-// });
-
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, 'uploads')
+  destination: function(req, file, cb) {
+    cb(null, 'uploads/');
   },
-  filename: (req, file, cb) => {
-      cb(null, file.fieldname + '-' + Date.now())
+  filename: function(req, file, cb) {
+    cb(null, new Date().toISOString() + file.originalname);
   }
 });
 
 const upload = multer({ storage: storage });
 
+
 // Get all articles
 router.get("/articles", async (req, res) => {
-	const articles = await Article.find().populate('comments')
-	res.send(articles)
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'get all articles'
+  // #swagger.summary = 'get all articles'
+
+  try {
+    const articles = await Article.find()
+    return res.status(200).send(articles)
+  } catch {
+    res.status(404).send({ error: "Articles not found!" })
+  }
 })
 
 // Create an article
 router.post("/articles", adminAuth, upload.single('image'), async (req, res) => {
- 
-  const token = req.body.token || req.query.token || req.headers["x-access-token"];
-  // console.log(token)
-  const decoded = jsonwebtoken.verify(token, JWT_SECRET); 
-  // console.log(decoded)
-  const userId = decoded.user_id;
-  // console.log(userId)
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'add new article'
+  // #swagger.summary = 'add new article'
+  /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
 
-	const article = new Article ({
-		title: req.body.title,
-    image: {data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename))},
-		content: req.body.content,
-    authorID: userId,
-	})
+  try {
+    const {error, value} = validateArticle(req.body);
 
-	await article.save()
-	res.send(article)
+    if (error) return res.status(400).send(error.details);
 
+    const userId = req.user._id;
+
+    console.log(userId)
+  
+    const article = new Article ({
+      title: req.body.title,
+      image: req.file ? req.file.filename : undefined,
+      content: req.body.content,
+      authorId: userId,
+    })
+  
+    await article.save()
+    return res.status(200).send({message:"Article added successfuly", article})
+  } catch {
+    console.log(req.user)
+    res.status(500).json({ error: "Unsuccessfull request!" })
+  }
 })
 
 // Get individual article
 router.get("/articles/:id", async (req, res) => {
-	const article = await Article.findOne({ _id: req.params.id }).populate('comments')
-	res.send(article)
+    // #swagger.tags = ['Articles']
+    // #swagger.description = 'get a single article'
+    // #swagger.summary = 'get a single article'
+
+	const article = await Article.findOne({ _id: req.params.id }).populate('likes').populate('comments')
+	return res.status(200).send(article)
 })
 
 // Update an article
 router.patch("/articles/:id", adminAuth, async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'update an article'
+  // #swagger.summary = 'update an article'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
 	try {
 		const article = await Article.findOne({ _id: req.params.id })
 
@@ -88,32 +111,52 @@ router.patch("/articles/:id", adminAuth, async (req, res) => {
 			article.content = req.body.content
 		}
 
+    if (req.body.image) {
+			article.image = req.body.image
+		}
+
 		await article.save()
-		res.send(article)
+		return res.status(200).send(article)
 	} catch {
-		res.status(404)
-		res.send({ error: "Article doesn't exist!" })
+		res.status(404).send({ error: "Article doesn't exist!" })
 	}
 })
 
 // Deleting an article
 router.delete("/articles/:id", adminAuth, async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'delete an article'
+  // #swagger.summary = 'delete an article'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
 	try {
-		await Article.deleteOne({ _id: req.params.id })
-		res.status(204).send()
+    const article = await Article.deleteOne({ _id: req.params.id })
+		return res.status(200).send({message: "Article deleted successfuly"})
 	} catch {
-		res.status(404)
-		res.send({ error: "Article doesn't exist!" })
+		res.status(404).send({ error: "Article doesn't exist!" })
 	}
 })
 
 // Adding a comment to an article
-router.post("/articles/:id/comments", userAuth, async (req, res) => {
-  try {
+router.post("/articles/:id/comments", userAuth,async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'add comment to an article'
+  // #swagger.summary = 'add comment to an article'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
 
-    const token = req.body.token || req.query.token || req.headers["x-access-token"];
-    const decoded = jsonwebtoken.verify(token, JWT_SECRET); 
-    const userId = decoded.user_id;
+  try {
+    const {error, value} = validateComment(req.body);
+
+    if (error) {
+      console.log(error)
+      return res.status(400).send(error.details)
+    }
+
+    const userId = req.user._id;
     
     const comment = new Comment({
       articleId: req.params.id,
@@ -126,157 +169,222 @@ router.post("/articles/:id/comments", userAuth, async (req, res) => {
     const article = await Article.findByIdAndUpdate(
       req.params.id,
       { $push: { comments: savedComment._id } },
-      { new: true },
+      // { new: true },
     ).populate('comments');
 
-    res.json(article);
-
-    // if(req.body.comment) {
-    //   const comment = new Comment ({
-    //     articleID: req.params.id,
-    //     comment: req.body.comment,
-    //     userID: userId,
-    //   })
-
-    //   await comment.save()
-    //   res.send(comment)
-    // }
+    return res.status(201).send({message: "Comment added successfuly", comment})
 
 	} catch {
-		res.status(404)
-		res.send({ error: "Article doesn't exist!" })
+		res.status(400).send({ error: "failed to add comment!" })
 	}
 })
 
-// router.post("/comments", userAuth, async (req, res) => {
- 
-//   const token = req.body.token || req.query.token || req.headers["x-access-token"];
-//   // console.log(token)
-//   const decoded = jsonwebtoken.verify(token, JWT_SECRET); 
-//   // console.log(decoded)
-//   const userId = decoded.user_id;
-//   // console.log(userId)
-
-// 	const comment = new Comment ({
-// 		articleID: req.body.articleId,
-//     comment: req.body.comment,
-//     userID: userId,
-// 	})
-
-// 	await comment.save()
-// 	res.send(comment)
-
-// })
-
 // Get all article comments
 router.get("/articles/:id/comments", async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'get all article comments'
+  // #swagger.summary = 'get all article comments'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
 	const article = await Article.findOne({ _id: req.params.id }).populate('comments')
-	res.send(article.comments)
+	return res.status(200).send(article.comments)
+})
+
+// Delete a comment
+router.delete("/articles/:id1/comments/:id2", userAuth, async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'delete a comment'
+  // #swagger.summary = 'delete a comment'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	try {
+
+    const userId = req.user._id;
+    console.log(userId)
+
+    const comment = await Comment.findOne({ _id: req.params.id2 })
+    
+    const comAuthor = comment.userId;
+    console.log(comAuthor)
+
+    if (userId.toString === comAuthor.toString) {
+      await Comment.deleteOne({ _id: req.params.id2 })
+      return res.status(200).send({message: "comment deleted successfuly"})
+    } else {
+      return res.status(403).send({error: "You do not have the permissions to delete this comment!"})
+    }
+
+	} catch {
+		res.status(404).send({ error: "Article doesn't exist!" })
+	}
 })
 
 // Adding a like to an article
 router.post("/articles/:id/likes", userAuth,async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'add a like to an article'
+  // #swagger.summary = 'add a like to an article'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
   try {
 
-    const article = await Article.findOne({ _id: req.params.id })
+    const {error, value} = validateLike();
 
-    const token = req.body.token || req.query.token || req.headers["x-access-token"];
-    // console.log(token)
-    const decoded = jsonwebtoken.verify(token, JWT_SECRET); 
-    // console.log(decoded)
-    const userId = decoded.user_id;
-    // console.log(userId)
-
-    if (req.body.like == true) {
-      const like = {
-        articleId: req.params.id,
-        userId: userId,
-        like: req.body.like,
-      }
-
-      await like.save()
-      res.send(like)
+    if (error) {
+      console.log(error)
+      return res.status(400).send(error.details)
     }
+
+    const articleId = req.params.id;
+    const userId = req.user._id;
+
+    const existingLike = await Like.findOne({ articleId, userId });
+
+    if (existingLike) {
+      return res.status(400).json({ error: 'You have already liked this article!' });
+    }
+
+    const like = new Like({
+      articleId,
+      userId,
+      like: true,
+    });
+
+    await like.save();
+
+    await Article.updateOne({ _id: articleId }, { $push: { likes: like._id } });
+
+    return res.status(201).json({ message: 'Article liked successfully', like });
+
   }
   catch {
-    res.status(404)
-    res.send({ error: "Article doesn't exist!" })
+    res.status(404).send({ error: "Article doesn't exist!" })
   }
 })
 
-router.post("/likes", userAuth, async (req, res) => {
- 
-  const token = req.body.token || req.query.token || req.headers["x-access-token"];
-  // console.log(token)
-  const decoded = jsonwebtoken.verify(token, JWT_SECRET); 
-  // console.log(decoded)
-  const userId = decoded.user_id;
-  // console.log(userId)
+// Get all article likes
+router.get("/articles/:id/likes", async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'get all article likes'
+  // #swagger.summary = 'get all article likes'
 
-	const like = new Comment ({
-		articleID: req.body.articleId,
-    userID: userId,
-	})
-
-	await like.save()
-	res.send(like)
-
+	const article = await Article.findOne({ _id: req.params.id }).populate('likes')
+	return res.status(200).send(article.likes)
 })
 
-// Create a Querry
+// Delete a like
+router.delete("/articles/:id1/likes/:id2", userAuth, async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'delete a like'
+  // #swagger.summary = 'delete a like'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	try {
+
+    const like = await Like.findOne({ _id: req.params.id2 })
+
+    const userId = req.user._id;
+
+    const likeAuthor = like.userId
+
+    if (userId === likeAuthor) {
+      await Like.deleteOne({ _id: req.params.id2 })
+      return res.status(204).send()
+    } else {
+      return res.status(403).send({error: "You do not have the permissions to remove this like!"})
+    }
+	} catch {
+		res.status(404).send({ error: "Article doesn't exist!" })
+	}
+})
+
+// Create a Query
 router.post("/queries", async (req, res) => {
-	const query = new Query ({
-		name: req.body.name,
-    email: req.body.email,
-		message: req.body.message,
-	})
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'create a query'
+  // #swagger.summary = 'create a query'
+
+  const {error, value} = validateQuery(req.body);
+
+  if (error) {
+    console.log(error)
+    return res.status(400).send(error.details)
+  }
+
+  const { name, email, message } = req.body
+
+	const query = new Query ({ name, email, message, })
+
 	await query.save()
-	res.send(query)
+
+	return res.status(201).send({message: "Query sent successfuly", query})
 })
 
-// Get all querries
+// Get all queries
 router.get("/queries", adminAuth,async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'get all queries'
+  // #swagger.summary = 'get all queries'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
 	const queries = await Query.find()
-	res.send(queries)
+	return res.status(200).send(queries)
 })
 
 // Add new admin user
-router.post("/registerAdmin", async (req, res) => {
-    try {
-      const { first_name, last_name, email, password } = req.body;
+router.post("/user/admin/signup", async (req, res) => {
+  // #swagger.tags = ['Articles']
+  // #swagger.description = 'add new admin user'
+  // #swagger.summary = 'add new admin user'
 
-      const {error, value} = validateSignUp(req.body);
+  try {
 
-      if (error) {
-        console.log(error)
-        return res.send(error.details)
-        // res.status(400).send("All input is required");
-      }
+    const {error, value} = validateSignUp(req.body);
 
-      const oldUser = await Admin.findOne({ email });
-
-      if (oldUser) {
-        return res.status(409).send("User Already Exist. Please Login");
-      }
-
-      encryptedPassword = await bcrypt.hash(password, 10);
-
-      const user = await Admin.create({
-        first_name,
-        last_name,
-        email: email.toLowerCase(),
-        password: encryptedPassword,
-      });
-
-      // return new user
-      res.status(201).json(user);
-    } catch (err) {
-      console.log(err);
+    if (error) {
+      console.log(error)
+      return res.status(400).send(error.details)
     }
+
+    const { first_name, last_name, email, password } = req.body;
+
+    const oldUser = await Admin.findOne({ email });
+
+    if (oldUser) {
+      return res.status(409).send("User Already Exist. Please Login");
+    }
+
+    encryptedPassword = await bcrypt.hash(password, 10);
+
+    const user = await Admin.create({
+      first_name,
+      last_name,
+      email: email.toLowerCase(),
+      password: encryptedPassword,
+    });
+
+    return res.status(201).send({message:"Admin added successfully",user});
+
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // Admin login
-router.post("/adminLogin", async (req, res) => {
+router.post("/user/admin/login", async (req, res) => {
+  // #swagger.tags = ['Admin']
+  // #swagger.description = 'admin login'
+  // #swagger.summary = 'admin login'
 
   try {
     const { email, password } = req.body;
@@ -285,8 +393,7 @@ router.post("/adminLogin", async (req, res) => {
 
     if (!(email && password)) {
       console.log(error)
-      return res.send(error.details)
-      // res.status(400).send("All input is required");
+      return res.status(400).send({message: 'Email and password are required', error: error.details});
     }
 
     const user = await Admin.findOne({ email });
@@ -297,16 +404,113 @@ router.post("/adminLogin", async (req, res) => {
 
       user.token = token;
 
-      res.status(200).json(user);
+      return res.status(200).send({ message: 'Login successful', token });
+    } else {
+      return res.status(401).send({ message: 'Email or password is incorrect' });
     }
-    res.status(400).send("Invalid Credentials");
+    
   } catch (err) {
-    console.log(err);
+    res.status(500).send({error: "login request failed!"})
   }
 });
 
+// Get all admin users
+router.get("/user/admin", adminAuth,async (req, res) => {
+  // #swagger.tags = ['Admin']
+  // #swagger.description = 'get all admin users'
+  // #swagger.summary = 'get all admin users'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	const admin = await Admin.find()
+	return res.status(200).send(admin)
+})
+
+// Update admin information
+router.patch("/user/admin/:id", adminAuth, async (req, res) => {
+  // #swagger.tags = ['Admin']
+  // #swagger.description = 'update admin information'
+  // #swagger.summary = 'update admin information'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	try {
+		const admin = await Admin.findOne({ _id: req.params.id })
+
+		if (req.body.first_name) {
+			admin.first_name = req.body.first_name
+		}
+
+		if (req.body.last_name) {
+			admin.last_name = req.body.last_name
+		}
+
+    if (req.body.email) {
+			admin.email = req.body.email
+		}
+
+		await admin.save()
+		return res.status(200).send({message: "Admin information updated successfully", admin})
+	} catch {
+		res.status(404).send({ error: "User not found!" })
+	}
+})
+
+// Delete admin user
+router.delete("/user/admin/:id", adminAuth, async (req, res) => {
+  // #swagger.tags = ['Admin']
+  // #swagger.description = 'delete admin user'
+  // #swagger.summary = 'delete admin user'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	try {
+		await Admin.deleteOne({ _id: req.params.id })
+		return res.status(200).send({message: "Admin user deleted successfully"})
+	} catch {
+		res.status(404).send({ error: "Admin user not found!" })
+	}
+})
+
+// Get all client users
+router.get("/user/client", adminAuth,async (req, res) => {
+  // #swagger.tags = ['Admin']
+  // #swagger.description = 'get all client users'
+  // #swagger.summary = 'get all client users'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	const user = await User.find()
+	return res.status(200).send(user)
+})
+
+// Delete client user
+router.delete("/user/client/:id", adminAuth, async (req, res) => {
+  // #swagger.tags = ['Admin']
+  // #swagger.description = 'delete client user'
+  // #swagger.summary = 'delete client user'
+    /* #swagger.security = [{
+    "apiKeyAuth": []
+  }] */
+
+	try {
+		await User.deleteOne({ _id: req.params.id })
+		return res.status(200).send({message: "User deleted successfully"})
+	} catch {
+		res.status(404).send({ error: "User not found!" })
+	}
+})
+
 // Add new client user
-router.post("/registerUser", async (req, res) => {
+router.post("/user/client/signup", async (req, res) => {
+  // #swagger.tags = ['User']
+  // #swagger.description = 'add new client user'
+  // #swagger.summary = 'add new client user'
+
   try {
     const { first_name, last_name, email, password } = req.body;
 
@@ -314,8 +518,7 @@ router.post("/registerUser", async (req, res) => {
 
     if (error) {
       console.log(error)
-      return res.send(error.details)
-      // res.status(400).send("All input is required");
+      return res.status(400).send(error.details)
     }
 
     const oldUser = await User.findOne({ email });
@@ -333,15 +536,18 @@ router.post("/registerUser", async (req, res) => {
       password: encryptedPassword,
     });
 
-    // return new user
-    res.status(201).json(user);
+
+    return res.status(201).send({message: "User added successfully", user});
   } catch (err) {
     console.log(err);
   }
 });
 
 // client login
-router.post("/clientLogin", async (req, res) => {
+router.post("/user/client/login", async (req, res) => {
+  // #swagger.tags = ['User']
+  // #swagger.description = 'user login'
+  // #swagger.summary = 'user login'
 
   try {
     const { email, password } = req.body;
@@ -350,8 +556,7 @@ router.post("/clientLogin", async (req, res) => {
 
     if (!(email && password)) {
       console.log(error)
-      return res.send(error.details)
-      // res.status(400).send("All input is required");
+      return res.status(400).send({message: 'Email and password are required', error: error.details});
     }
 
     const user = await User.findOne({ email });
@@ -362,17 +567,12 @@ router.post("/clientLogin", async (req, res) => {
 
       user.token = token;
 
-      res.status(200).json(user);
+      return res.status(200).send({ message: 'Login successful', token });
     }
-    res.status(400).send("Invalid Credentials");
+    return res.status(401).send({ message: 'Email or password is incorrect' });
   } catch (err) {
     console.log(err);
   }
-});
-
-
-router.post("/welcome", adminAuth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
 });
 
 
