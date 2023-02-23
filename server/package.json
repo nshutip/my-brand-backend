@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/**/*.js",
+    "test": "nyc mocha test/**/*.js",
     "test-with-coverage": "nyc report --reporter=text",
     "coverage": "nyc npm run test",
     "start": "node server.js"
@@ -16,6 +16,7 @@
     "exclude": [
       "**/node_modules/**",
       "**/test/**",
+      "**/dist/**",
       "**/swagger/**"
     ],
     "reporter": [
