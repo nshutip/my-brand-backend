@@ -10,23 +10,15 @@ chai.use(chaiHttp);
 describe('User', () => {
     let userToken
     let userId
-    before((done) => {
-        chai.request(app)
-          .post('/api/user/client/login')
-          .send({ email: 'nshuti@gmail.com', password: 'password' })
-          .end((err, res) => {
-            console.log(res.body)
-            res.body.should.have.property('token').not.null;
-            userToken = res.body.token;
-            userId = res.body._id
-            done();
-           }
-        );
+    before(async () => {
+        const res = await chai.request(app)
+        .post('/api/user/client/login')
+        .send({ email: 'nshuti@gmail.com', password: 'password' })
+        
+        res.body.should.have.property('token').not.null;
+        userToken = res.body.token;
+        userId = res.body._id
     });
-
-    // after(async () => {
-    //     await User.deleteMany({});
-    // });
 
     describe('POST login', () => {
         it('should log in with valid credentials and return a JWT token', (done) => {
@@ -81,24 +73,22 @@ describe('User', () => {
         });
     });
 
+    let count = 1
     describe('POST signup', () => {
-        it('should register new client user', (done) => {
-            const user = {
+        it('should register new client user', async () => {
+            const res = await chai.request(app)
+            .post('/api/user/client/signup')
+            .send({
                 first_name: "unitTest",
                 last_name: "client",
-                email:"clientTest@gmail.com",
-                password:"password"
-            };
-            chai
-            .request(app)
-            .post('/api/user/client/signup')
-            .send(user)
-            .end((err, res) => {
-                res.should.have.status(201);
-                res.body.should.be.a('object');
-                res.body.should.have.property('message').eql('User added successfully');
-                done();
-            });
+                email: "clientTest@gmail.com",
+                password: "password"
+            })
+
+            res.should.have.status(201);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('User added successfully');
+            
         });
     })
 
@@ -119,5 +109,9 @@ describe('User', () => {
     //     });
     //     });
     // });
+
+    after(async () => {
+        await User.deleteMany({first_name: "unitTest"});
+    });
 
 })
