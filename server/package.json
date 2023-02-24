@@ -3,37 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha test/**/*.js",
-    "test-with-coverage": "nyc report --reporter=text",
-    "coverage": "nyc npm run test",
+    "test": "mocha",
+    "coverage": "nyc --reporter=html --reporter=text mocha",
     "start": "node server.js"
-  },
-  "nyc": {
-    "extension": [
-      ".js"
-    ],
-    "check-coverage": true,
-    "exclude": [
-      "**/node_modules/**",
-      "**/test/**",
-      "**/dist/**",
-      "**/swagger/**"
-    ],
-    "reporter": [
-      "text",
-      "lcov",
-      "html"
-    ],
-    "report-dir": "./coverage",
-    "all": true,
-    "excludeNodeModules": true
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@istanbuljs/nyc-config-babel": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
+    "handlebars": "^4.7.7",
     "istanbul": "^0.4.5",
     "joi": "^17.7.0",
     "jsonwebtoken": "^9.0.0",
@@ -44,6 +25,8 @@
     "swagger-ui-express": "^4.6.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "babel-plugin-istanbul": "^6.1.1",
     "chai": "^4.3.7",
     "chai-http": "^4.3.0",
     "coveralls": "^3.1.1",

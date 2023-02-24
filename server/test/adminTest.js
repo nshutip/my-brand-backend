@@ -22,10 +22,6 @@ describe('Admin', () => {
         );
     });
 
-    // after(async () => {
-    //     await Admin.deleteMany({});
-    // });
-
     describe('POST login', () => {
         it('should log in with valid credentials and return a JWT token', (done) => {
             const user = {
@@ -95,7 +91,6 @@ describe('Admin', () => {
                 res.should.have.status(201);
                 res.body.should.be.a('object');
                 res.body.should.have.property('message').eql('Admin added successfully');
-                // console.log(res.body)
                 done();
             });
         });
@@ -185,6 +180,10 @@ describe('Admin', () => {
             });
         });
         });
+    });
+
+    after(async () => {
+        await Admin.deleteMany({first_name: "unitTest"});
     });
 
 })
