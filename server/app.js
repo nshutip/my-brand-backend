@@ -308,7 +308,7 @@ router.delete("/articles/:id1/likes/:id2", userAuth, async (req, res) => {
 
 // Create a Query
 router.post("/queries", async (req, res) => {
-  // #swagger.tags = ['Articles']
+  // #swagger.tags = ['Querries']
   // #swagger.description = 'create a query'
   // #swagger.summary = 'create a query'
 
@@ -330,7 +330,7 @@ router.post("/queries", async (req, res) => {
 
 // Get all queries
 router.get("/queries", adminAuth,async (req, res) => {
-  // #swagger.tags = ['Articles']
+  // #swagger.tags = ['Queries']
   // #swagger.description = 'get all queries'
   // #swagger.summary = 'get all queries'
     /* #swagger.security = [{
