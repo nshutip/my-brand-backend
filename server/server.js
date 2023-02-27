@@ -4,11 +4,13 @@ const routes = require("./app")
 const jsonwebtoken = require("jsonwebtoken");
 const swaggerUI = require("swagger-ui-express")
 const swaggerDoc = require("./swagger")
+const dotenv = require('dotenv');
+dotenv.config()
 
 const JWT_SECRET = "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
 
 try {
-	mongoose.connect("mongodb://localhost:27017/my-brand", { useNewUrlParser: true })
+	mongoose.connect(process.env.REMOTE_URL, { useNewUrlParser: true })
 	.then(() => {
 		console.log("Successfully connected to database");
 	})
@@ -30,8 +32,8 @@ try {
 		res.status(404).json({ error: "RESOURCE NOT FOUND" });
 	});
 
-	const server = app.listen(4000, () => {
-		console.log("Server has started! API running on localhost:4000")
+	const server = app.listen(process.env.PORT, () => {
+		console.log(`Server has started! API running on ${process.env.PORT}`)
 	})
 
 	module.exports = server
