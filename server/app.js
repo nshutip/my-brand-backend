@@ -62,7 +62,12 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
 
     if (error) return res.status(400).send(error.details);
 
-    const userId = await req.user._id;
+    const token = req.headers["x-access-token"];
+
+    const decoded = jsonwebtoken.verify(token, JWT_SECRET);
+    const user = await Admin.findOne({ _id: decoded.user_id });
+
+    const userId = user._id;
 
     console.log(userId)
   
