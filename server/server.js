@@ -19,7 +19,7 @@ const frontedURL = "http://localhost:3000/"
 const JWT_SECRET = "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
 
 try {
-	mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true })
+	mongoose.connect("mongodb://localhost:27017/", { useNewUrlParser: true })
 	.then(() => {
 		console.log("Successfully connected to database");
 	})
