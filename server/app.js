@@ -405,6 +405,7 @@ router.post("/user/admin/login", async (req, res) => {
       user.token = token;
 
       return res.status(200).send({ message: 'Login successful', token });
+      
     } else {
       return res.status(401).send({ message: 'Email or password is incorrect' });
     }
