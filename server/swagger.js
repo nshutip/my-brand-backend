@@ -1,6 +1,6 @@
 const swaggerJSDoc = require('swagger-jsdoc');
-// import dotenv from "dotenv";
-// dotenv.config()
+const dotenv = require('dotenv');
+dotenv.config()
 
 const options = {
 apis: ["./swagger/*.js"],
@@ -13,7 +13,7 @@ definition: {
     },
     servers: [
     {
-        // url: process.env.SERVER_URL,
+        url: process.env.SERVER_URL,
         url: "http://localhost:4000/api/"
     },
     ],
