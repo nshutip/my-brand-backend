@@ -82,7 +82,8 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
     return res.status(200).send({message:"Article added successfuly", article})
   } catch (error){
     console.log(req.user)
-    return res.status(500).json({ error: "Unsuccessfull request!" })
+    // return res.status(500).json({ error: "Unsuccessfull request!" })
+    console.log(error)
   }
 })
 
