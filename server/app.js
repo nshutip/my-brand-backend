@@ -62,7 +62,7 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
 
     if (error) return res.status(400).send(error.details);
 
-    const userId = req.user._id;
+    const userId = await req.user._id;
 
     console.log(userId)
   
@@ -73,6 +73,7 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
       authorId: userId,
     })
   
+    console.log(authorId)
     await article.save()
     return res.status(200).send({message:"Article added successfuly", article})
   } catch {
