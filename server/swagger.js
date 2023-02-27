@@ -13,8 +13,7 @@ definition: {
     },
     servers: [
     {
-        url: process.env.SERVER_URL,
-        url: "http://localhost:4000/api/"
+        url: process.env.PORT
     },
     ],
     components: {

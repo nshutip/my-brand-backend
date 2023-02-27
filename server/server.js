@@ -1,16 +1,25 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const routes = require("./app")
+const cors = require('cors');
 const jsonwebtoken = require("jsonwebtoken");
 const swaggerUI = require("swagger-ui-express")
 const swaggerDoc = require("./swagger")
-const dotenv = require('dotenv');
-dotenv.config()
+
+const dotenv = require('dotenv').config();
+
+console.log(dotenv.parsed)
+
+const PORT = process.env.PORT || 4000
+
+// const frontedURL = "https://nshutip.github.io/My-BRAND-Nshuti/UI/"
+
+const frontedURL = "http://localhost:3000/"
 
 const JWT_SECRET = "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
 
 try {
-	mongoose.connect(process.env.REMOTE_URL, { useNewUrlParser: true })
+	mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true })
 	.then(() => {
 		console.log("Successfully connected to database");
 	})
@@ -22,6 +31,8 @@ try {
 
 	const app = express()
 
+	app.use(cors({origin: frontedURL}))
+
 	app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc))
 
 	app.use(express.json())
@@ -32,8 +43,8 @@ try {
 		res.status(404).json({ error: "RESOURCE NOT FOUND" });
 	});
 
-	const server = app.listen(process.env.PORT, () => {
-		console.log(`Server has started! API running on ${process.env.PORT}`)
+	const server = app.listen(PORT, () => {
+		console.log(`Server has started! API running on ${PORT}`)
 	})
 
 	module.exports = server
