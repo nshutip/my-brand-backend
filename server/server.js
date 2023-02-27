@@ -27,6 +27,8 @@ try {
 
 	const app = express()
 
+	app.use(cors({origin:"*"}))
+
 	app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc))
 
 	app.use(express.json())
