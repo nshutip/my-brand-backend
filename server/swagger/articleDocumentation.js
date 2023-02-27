@@ -58,7 +58,7 @@
 
 /**
  * @swagger
- * /articles:
+ * /api/articles:
  *   get:
  *     tags:
  *       - Articles
@@ -75,7 +75,7 @@
 
 /**
  * @swagger
- * /articles/{id}:
+ * /api/articles/{id}:
  *   get:
  *     tags:
  *       - Articles
@@ -101,7 +101,7 @@
 // Create an article
 /**
  * @swagger
- * /articles:
+ * /api/articles:
  *   post:
  *     tags:
  *       - Articles
@@ -139,7 +139,7 @@
 
 /**
  * @swagger
- * /articles/{id}:
+ * /api/articles/{id}:
  *   patch:
  *     tags:
  *       - Articles
@@ -188,7 +188,7 @@
 
 /**
  * @swagger
- * /articles/{id}:
+ * /api/articles/{id}:
  *  delete:
  *     tags:
  *       - Articles
@@ -218,7 +218,7 @@
 
 /**
  * @swagger
- * /articles/{id}/comments:
+ * /api/articles/{id}/comments:
  *   post:
  *     tags:
  *       - Articles
@@ -258,7 +258,7 @@
 
 /**
  * @swagger
- * /articles/{id1}/comments:
+ * /api/articles/{id1}/comments:
  *  get:
  *     tags:
  *       - Articles
@@ -283,7 +283,7 @@
 
 /**
  * @swagger
- * /articles/{id}/likes:
+ * /api/articles/{id}/likes:
  *  post:
  *      tags:
  *          - Articles
@@ -324,7 +324,7 @@
 
 /**
  * @swagger
- * /articles/{id}/likes:
+ * /api/articles/{id}/likes:
  *  get:
  *     tags:
  *       - Articles

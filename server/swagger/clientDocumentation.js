@@ -34,7 +34,7 @@
 
 /**
 * @swagger
-* /user/client/login:
+* /api/user/client/login:
 *   post:
 *     tags:
 *       - User
@@ -74,7 +74,7 @@
 
 /**
  * @swagger
- * /user/client/signup:
+ * /api/user/client/signup:
  *   post:
  *     tags:
  *       - User
@@ -117,7 +117,7 @@
 
 /**
  * @swagger
- * /user/client/{id}:
+ * /api/user/client/{id}:
  *   patch:
  *     tags:
  *       - User

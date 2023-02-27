@@ -18,7 +18,7 @@
  *
  *
  * @swagger
- * /queries:
+ * /api/queries:
  *   post:
  *     tags:
  *       -  Queries
@@ -57,7 +57,7 @@
 
 /**
  * @swagger
- * /queries:
+ * /api/queries:
  *    get:
  *       tags:
  *         -  Queries

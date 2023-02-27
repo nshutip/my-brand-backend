@@ -32,7 +32,7 @@
 
 /**
 * @swagger
-* /user/admin/login:
+* /api/user/admin/login:
 *   post:
 *     tags:
 *       - Admin
@@ -69,7 +69,7 @@
 
 /**
  * @swagger
- * /user/admin/signup:
+ * /api/user/admin/signup:
  *   post:
  *     tags:
  *       - Admin
@@ -116,7 +116,7 @@
 
 /**
  * @swagger
- * /user/admin/{id}:
+ * /api/user/admin/{id}:
  *   patch:
  *     tags:
  *       - Admin
@@ -165,7 +165,7 @@
 
 /**
  * @swagger
- * /user/admin:
+ * /api/user/admin:
  *   get:
  *     tags:
  *       - Admin
@@ -186,7 +186,7 @@
 
 /**
  * @swagger
- * /user/admin/{id}:
+ * /api/user/admin/{id}:
  *  delete:
  *     tags:
  *       - Admin
@@ -216,7 +216,7 @@
 
 /**
  * @swagger
- * /user/client:
+ * /api/user/client:
  *   get:
  *     tags:
  *       - Admin
@@ -237,7 +237,7 @@
 
 /**
  * @swagger
- * /user/client/{id}:
+ * /api/user/client/{id}:
  *  delete:
  *     tags:
  *       - Admin

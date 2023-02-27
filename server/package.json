@@ -6,7 +6,7 @@
     "test": "mocha",
     "coverage": "nyc npm run test",
     "coveralls": "NODE_ENV=test nyc report --reporter=text-lcov | coveralls",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -23,8 +23,10 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.0",
     "multer": "^1.4.5-lts.1",
+    "nodemon": "^2.0.20",
     "should": "^13.2.3",
     "swagger-jsdoc": "^6.2.8",
+    "swagger-ui": "^4.16.1",
     "swagger-ui-express": "^4.6.1"
   },
   "devDependencies": {

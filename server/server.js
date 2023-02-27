@@ -12,10 +12,6 @@ console.log(dotenv.parsed)
 
 const PORT = process.env.PORT || 4000
 
-// const frontedURL = "https://nshutip.github.io/My-BRAND-Nshuti/UI/"
-
-const frontedURL = "http://localhost:3000/"
-
 const JWT_SECRET = "goK!pusp6ThEdURUtRenOwUhAsWUCLheBazl!uJLPlS8EbreWLdrupIwabRAsiBu";
 
 try {
@@ -30,8 +26,6 @@ try {
 	});
 
 	const app = express()
-
-	app.use(cors({origin: frontedURL}))
 
 	app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc))
 

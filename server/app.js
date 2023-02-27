@@ -77,7 +77,7 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
     return res.status(200).send({message:"Article added successfuly", article})
   } catch {
     console.log(req.user)
-    res.status(500).json({ error: "Unsuccessfull request!" })
+    return res.status(500).json({ error: "Unsuccessfull request!" })
   }
 })
 
@@ -118,7 +118,7 @@ router.patch("/articles/:id", adminAuth, async (req, res) => {
 		await article.save()
 		return res.status(200).send(article)
 	} catch {
-		res.status(404).send({ error: "Article doesn't exist!" })
+		return res.status(404).send({ error: "Article doesn't exist!" })
 	}
 })
 
@@ -404,14 +404,14 @@ router.post("/user/admin/login", async (req, res) => {
 
       user.token = token;
 
-      return res.status(200).send({ message: 'Login successful', token });
+      return res.status(200).json({ message: 'Login successful', token });
       
     } else {
       return res.status(401).send({ message: 'Email or password is incorrect' });
     }
     
   } catch (err) {
-    res.status(500).send({error: "login request failed!"})
+    return res.status(500).json({error: "login request failed!"})
   }
 });
 
@@ -455,7 +455,7 @@ router.patch("/user/admin/:id", adminAuth, async (req, res) => {
 		await admin.save()
 		return res.status(200).send({message: "Admin information updated successfully", admin})
 	} catch {
-		res.status(404).send({ error: "User not found!" })
+		return res.status(404).send({ error: "User not found!" })
 	}
 })
 

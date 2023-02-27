@@ -13,7 +13,7 @@ definition: {
     },
     servers: [
     {
-        url: process.env.PORT
+        url: process.env.SERVER_URI,
     },
     ],
     components: {
