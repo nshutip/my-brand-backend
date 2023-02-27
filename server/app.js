@@ -73,7 +73,7 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
   
     const article = new Article ({
       title: req.body.title,
-      image: req.file ? req.file.filename : undefined,
+      image: req.file ? req.file.filename : undefined || req.body.image,
       content: req.body.content,
       authorId: userId,
     })
