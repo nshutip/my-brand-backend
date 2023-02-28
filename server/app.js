@@ -183,7 +183,7 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
         articleId,
         { $push: { comments: savedComment._id } },
         { new: true },
-      ).populate('comments');
+      );
   
       return res.status(201).send({message: "Comment added successfuly", comment})
     }
