@@ -164,7 +164,7 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const token = req.headers["x-access-token"];
 
     const decoded = jsonwebtoken.verify(token, JWT_SECRET);
-    const user = await Admin.findOne({ _id: decoded.user_id });
+    const user = await User.findOne({ _id: decoded.user_id });
 
     const userId = user._id;
     
@@ -179,7 +179,7 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const article = await Article.findByIdAndUpdate(
       req.params.id,
       { $push: { comments: savedComment._id } },
-      // { new: true },
+      { new: true },
     ).populate('comments');
 
     return res.status(201).send({message: "Comment added successfuly", comment})
