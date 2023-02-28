@@ -184,7 +184,8 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
 
     return res.status(201).send({message: "Comment added successfuly", comment})
 
-	} catch {
+	} catch (error){
+    console.log(error)
 		res.status(400).send({ error: "failed to add comment!" })
 	}
 })
