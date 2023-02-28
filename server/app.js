@@ -179,7 +179,7 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const savedComment = await comment.save();
 
     await Article.findByIdAndUpdate(
-      req.params.id,
+      articleId,
       { $push: { comments: savedComment._id } },
       { new: true },
     ).populate('comments');
