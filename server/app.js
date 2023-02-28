@@ -169,22 +169,24 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const userId = user._id;
 
     const articleId = req.params.id;
-    
-    const comment = new Comment({
-      articleId: articleId,
-      userId: userId,
-      comment: req.body.comment,
-    });
 
-    const savedComment = await comment.save();
-
-    await Article.findByIdAndUpdate(
-      articleId,
-      { $push: { comments: savedComment._id } },
-      { new: true },
-    ).populate('comments');
-
-    return res.status(201).send({message: "Comment added successfuly", comment})
+    if (articleId.match(/^[0-9a-fA-F]{24}$/)) {
+      const comment = new Comment({
+        articleId: articleId,
+        userId: userId,
+        comment: req.body.comment,
+      });
+  
+      const savedComment = await comment.save();
+  
+      await Article.findByIdAndUpdate(
+        articleId,
+        { $push: { comments: savedComment._id } },
+        { new: true },
+      ).populate('comments');
+  
+      return res.status(201).send({message: "Comment added successfuly", comment})
+    }
 
 	} catch (error){
     console.log(error)
