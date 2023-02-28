@@ -415,29 +415,7 @@
 <a name='L350'></a><a href='#L350'>350</a>
 <a name='L351'></a><a href='#L351'>351</a>
 <a name='L352'></a><a href='#L352'>352</a>
-<a name='L353'></a><a href='#L353'>353</a>
-<a name='L354'></a><a href='#L354'>354</a>
-<a name='L355'></a><a href='#L355'>355</a>
-<a name='L356'></a><a href='#L356'>356</a>
-<a name='L357'></a><a href='#L357'>357</a>
-<a name='L358'></a><a href='#L358'>358</a>
-<a name='L359'></a><a href='#L359'>359</a>
-<a name='L360'></a><a href='#L360'>360</a>
-<a name='L361'></a><a href='#L361'>361</a>
-<a name='L362'></a><a href='#L362'>362</a>
-<a name='L363'></a><a href='#L363'>363</a>
-<a name='L364'></a><a href='#L364'>364</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L353'></a><a href='#L353'>353</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -795,7 +773,7 @@
  * @swagger
  * components:
  *   schemas:
- *     Articles:
+ *     Article:
  *      type: object
  *      properties:
  *       _id:
@@ -811,12 +789,12 @@
  *         # format: int32
  *         example: Test content 15
  *       image:
- *        type: string
- *        # format: int32
-*         example: image.jpeg
+ *         type: string
+ *         # format: int32
+ *         example: image.jpeg
  *       comments:
- *        type: array
- *        items:
+ *         type: array
+ *         items:
  *          type: object
  *          properties:
  *            _id:
@@ -837,23 +815,9 @@
  *       likes:
  *        type: array
  *        items:
- *          type: object
- *          properties:
- *            _id:
- *              type: string
- *              format: objectId
- *              example: 63a567bc2a672df0a5192bb8
- *            userId:
- *              type: string
- *              format: objectId
- *              example: 63a567bc2a672df0a5192bb8
- *            articleId:
- *              type: string
- *              format: objectId
- *              example: 63a567bc2a672df0a5192bb8
- *            like:
- *              type: boolean
- *              example: true
+ *          type: string
+ *          format: objectId
+ *          example: 63a567bc2a672df0a5192bb8
  *       __v:
  *        type: integer
  *        example: 1
@@ -861,16 +825,15 @@
 &nbsp;
 // 
 &nbsp;
-&nbsp;
 /**
  * @swagger
- * /articles:
+ * /api/articles:
  *   get:
  *     tags:
- *       - articles
- *     summary: Getting a list of all articles
- *     description: Getting all articles
- *     operationId: viewarticles
+ *       - Articles
+ *     summary: get all articles
+ *     description: get all articles
+ *     operationId: viewArticles
  *     responses:
  *       '200':
  *         description: Successful operation
@@ -878,26 +841,25 @@
  *         description: Internal server error
  */
 &nbsp;
-// 
 &nbsp;
 /**
  * @swagger
- * /articles/{articleId}:
+ * /api/articles/{id}:
  *   get:
  *     tags:
- *       - articles
- *     summary: Find article by ID
- *     description: Returns a single article
- *     operationId: getarticleById
+ *       - Articles
+ *     summary: get a single article
+ *     description: get a single article
+ *     operationId: viewArticle
  *     parameters:
- *       - name: articleId
+ *       - name: id
  *         in: path
  *         description: ID of article to return
  *         required: true
  *         schema:
  *           type: string
  *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
+ *           example: 63f11b6d75b85eeb64a5b443
  *     responses:
  *       '200':
  *         description: successful operation
@@ -905,67 +867,13 @@
  *         description: Internal server error
  */
 &nbsp;
-&nbsp;
-// 
+// Create an article
 /**
  * @swagger
- * /articles/{articleId}/comment:
- *  get:
- *     tags:
- *       - articles
- *     summary: Get all comments on an article
- *     description: Get all comments on an article
- *     operationId: getComments
- *     parameters:
- *       - name: articleId
- *         in: path
- *         description: ID of article to return
- *         required: true
- *         schema:
- *           type: string
- *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
- *     responses:
- *       '200':
- *         description: successful operation
- *       '500':
- *         description: Internal server error
- */
-&nbsp;
-// 
-/**
- * @swagger
- * /articles/{articleId}/likes:
- *  get:
- *     tags:
- *       - articles
- *     summary: Get all likes on an article
- *     description: Get all likes on an article
- *     operationId: getLikes
- *     parameters:
- *       - name: articleId
- *         in: path
- *         description: ID of article to return
- *         required: true
- *         schema:
- *           type: string
- *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
- *     responses:
- *       '200':
- *         description: successful operation
- *       '500':
- *         description: Internal server error
- */
-&nbsp;
-// post article 
-&nbsp;
-/**
- * @swagger
- * /articles:
+ * /api/articles:
  *   post:
  *     tags:
- *       - articles
+ *       - Articles
  *     summary: Add a new article
  *     description: Add a new article
  *     operationId: addarticle
@@ -984,7 +892,6 @@
  *                  example: article content should be string of any size
  *                image:
  *                  type: string
- *                  format: binary
  *                  example: data:img:png...
  *       required: true
  *     responses:
@@ -995,30 +902,28 @@
  *       '500':
  *         description: Internal server error
  *     security: 
- *       - {}
+ *       - bodyAuth: []
  *       - bearerAuth: []    
  */
 &nbsp;
-//  update article 
-&nbsp;
 /**
  * @swagger
- * /articles/{articleId}:
+ * /api/articles/{id}:
  *   patch:
  *     tags:
- *       - articles
- *     summary: Update article
- *     description: Update article
- *     operationId: Updatearticle
+ *       - Articles
+ *     summary: update an article
+ *     description: update an article
+ *     operationId: updateArticle
  *     parameters:
- *       - name: articleId
+ *       - name: id
  *         in: path
  *         description: article Id to update the article
  *         required: true
  *         schema:
  *           type: string
  *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
+ *           example: 63f11b6d75b85eeb64a5b443
  *     requestBody:
  *       description: Update article
  *       content:
@@ -1046,30 +951,28 @@
  *       '500':
  *         description: Internal server error
  *     security: 
- *       - {}
+ *       - bodyAuth: []
  *       - bearerAuth: [] 
  */
 &nbsp;
-//  delete article 
-&nbsp;
 /**
  * @swagger
- * /articles/{articleId}:
+ * /api/articles/{id}:
  *  delete:
  *     tags:
- *       - articles
- *     summary: Deletes an article by ID
+ *       - Articles
+ *     summary: delete an article
  *     description: delete an article
- *     operationId: deletearticle
+ *     operationId: deleteArticle
  *     parameters:
- *       - name: articleId
+ *       - name: id
  *         in: path
  *         description: article Id to delete
  *         required: true
  *         schema:
  *           type: string
  *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
+ *           example: 63f121817058013ccffc0306
  *     responses:
  *       '200':
  *         description: Successfull operation
@@ -1078,20 +981,18 @@
  *       '401':
  *         description: Not Authorized
  *     security: 
- *       - {}
+ *       - bodyAuth: []
  *       - bearerAuth: [] 
  */
 &nbsp;
-// post comment 
-&nbsp;
 /**
  * @swagger
- * /articles/{articleId}/comment:
+ * /api/articles/{id}/comments:
  *   post:
  *     tags:
- *       - articles
- *     summary: Comment on an article
- *     description: Commenting on an article
+ *       - Articles
+ *     summary: add comment to an article
+ *     description: add comment to an article
  *     operationId: postComment
  *     requestBody:
  *       description: Post a comment on an article
@@ -1105,61 +1006,127 @@
  *                 example: first swagger comment
  *       required: true
  *     parameters:
- *       - name: articleId
+ *       - name: id
  *         in: path
  *         description: ID of article to return
  *         required: true
  *         schema:
- *           type: string
- *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
+ *          type: string
+ *          format: objectId
+ *          example: 63f11b6d75b85eeb64a5b443
  *     responses:
  *       '200':
  *         description: successful operation
  *       '500':
  *         description: Internal server error
  *     security: 
- *       - {}
+ *       - bodyAuth: []
  *       - bearerAuth: [] 
  */
 &nbsp;
-// post Likes
 &nbsp;
 /**
  * @swagger
- * /articles/{articleId}/like:
- *   post:
+ * /api/articles/{id1}/comments:
+ *  get:
  *     tags:
- *       - articles
- *     summary: Adding or removing a like on an article
- *     description: Adding or removing a like on an article
- *     operationId: postLike
+ *       - Articles
+ *     summary: get all article comments
+ *     description: get all article comments
+ *     operationId: getComments
  *     parameters:
- *       - name: articleId
- *         in: path
- *         description: ID of article to like
- *         required: true
- *         schema:
- *           type: string
- *           format: objectId
- *           example: 63a567bc2a672df0a5192bb8
+ *            - name: id1
+ *              in: path
+ *              description: ID of article to return
+ *              required: true
+ *              schema:
+ *                  type: string
+ *                  format: objectId
+ *                  example: 63f11b6d75b85eeb64a5b443
  *     responses:
  *       '200':
  *         description: successful operation
- *         content:
  *       '500':
  *         description: Internal server error
- *     security: 
- *       - {}
- *       - bearerAuth: [] 
- */</pre></td></tr></table></pre>
+ */
+&nbsp;
+/**
+ * @swagger
+ * /api/articles/{id}/likes:
+ *  post:
+ *      tags:
+ *          - Articles
+ *      summary: Adding a like to an article
+ *      description: Adding a like to an article
+ *      operationId: postLike
+ *      requestBody:
+ *          description: Post a like on an article
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          like:
+ *                              type: boolean
+ *                              example: true
+ *          required: true
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID of article to like
+ *          required: true
+ *          schema:
+ *              type: string
+ *              format: objectId
+ *              example: 63f11b6d75b85eeb64a5b443
+ *      responses:
+ *          '200':
+ *              description: successful operation
+ *              content:
+ *          '500':
+ *              description: Internal server error
+ *      security: 
+ *          - bodyAuth: []
+ *          - bearerAuth: [] 
+ */
+&nbsp;
+&nbsp;
+/**
+ * @swagger
+ * /api/articles/{id}/likes:
+ *  get:
+ *     tags:
+ *       - Articles
+ *     summary: get all article likes
+ *     description: get all article likes
+ *     operationId: getLikes
+ *     parameters:
+ *          - name: id
+ *            in: path
+ *            description: ID of article to return
+ *            required: true
+ *            schema:
+ *                type: string
+ *                format: objectId
+ *                example: 63f11b6d75b85eeb64a5b443
+ *     responses:
+ *       '200':
+ *         description: successful operation
+ *       '500':
+ *         description: Internal server error
+ */
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-02-20T13:00:31.529Z
+                at 2023-02-28T12:40:06.521Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

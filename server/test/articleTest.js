@@ -39,7 +39,7 @@ describe('Articles API', () => {
         const updateArticle = updateArticleRes.body.article
         updateArticleId = updateArticle._id
     });
-
+    
     after(async () => {
         await Article.deleteMany({});
     });

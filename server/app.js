@@ -82,8 +82,7 @@ router.post("/articles", adminAuth, upload.single('image'), async (req, res) => 
     return res.status(200).send({message:"Article added successfuly", article})
   } catch (error){
     console.log(req.user)
-    // return res.status(500).json({ error: "Unsuccessfull request!" })
-    console.log(error)
+    return res.status(500).json({ error: "Unsuccessfull request!" })
   }
 })
 
@@ -162,7 +161,12 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
       return res.status(400).send(error.details)
     }
 
-    const userId = req.user._id;
+    const token = req.headers["x-access-token"];
+
+    const decoded = jsonwebtoken.verify(token, JWT_SECRET);
+    const user = await Admin.findOne({ _id: decoded.user_id });
+
+    const userId = user._id;
     
     const comment = new Comment({
       articleId: req.params.id,

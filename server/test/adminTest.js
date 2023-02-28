@@ -10,16 +10,19 @@ chai.use(chaiHttp);
 
 describe('Admin', () => {
     let adminToken
-    before((done) => {
-        chai.request(app)
-          .post('/api/user/admin/login')
-          .send({ email: 'nshuti@gmail.com', password: 'password' })
-          .end((err, res) => {
+    before(async (done) => {
+        this.timeout(10000)
+        try {
+            const res = await chai.request(app)
+            .post('/api/user/admin/login')
+            .send({ email: 'nshuti@gmail.com', password: 'password' })
+            
             res.body.should.have.property('token').not.null;
             adminToken = res.body.token;
-            done();
-           }
-        );
+            done()
+        } catch (error){
+            console.log(error)
+        }
     });
 
     describe('POST login', () => {
@@ -76,31 +79,44 @@ describe('Admin', () => {
     });
 
     describe('POST signup', () => {
-        it('should register new admin user', (done) => {
-            const user = {
-                first_name: "unitTest",
-                last_name: "adminSignup",
-                email:"adminTest@gmail.com",
-                password:"password"
-            };
-            chai
-            .request(app)
+        it('should register new admin user', async () => {
+            // const user = {
+            //     first_name: "unitTest",
+            //     last_name: "adminSignup",
+            //     email:"adminTest@gmail.com",
+            //     password:"password"
+            // };
+            // chai
+            // .request(app)
+            // .post('/api/user/admin/signup')
+            // .send(user)
+            // .end((err, res) => {
+            //     res.should.have.status(201);
+            //     res.body.should.be.a('object');
+            //     res.body.should.have.property('message').eql('Admin added successfully');
+            //     done();
+            // });
+
+            const res = await chai.request(app)
             .post('/api/user/admin/signup')
-            .send(user)
-            .end((err, res) => {
-                res.should.have.status(201);
-                res.body.should.be.a('object');
-                res.body.should.have.property('message').eql('Admin added successfully');
-                done();
-            });
+            .send({
+                first_name: "unitTest",
+                last_name: "admin",
+                email: "adminTest@gmail.com",
+                password: "password"
+            })
+
+            res.should.have.status(201);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('Admin added successfully');
         });
     })
 
     describe('PATCH update', () => {
         it('should update an admin information', (done) => {
         const admin = new Admin({ first_name: 'unitTest', last_name: "adminUpdate", email: 'unitTest@gmail.com', password: "password" });
-        admin.save((err, savedAdmin) => {
-            chai.request(app)
+        admin.save(async (err, savedAdmin) => {
+            await chai.request(app)
             .patch(`/api/user/admin/${savedAdmin._id}`)
             .set('x-access-token', adminToken)
             .send({ last_name: 'adminUpdated' })
@@ -164,8 +180,8 @@ describe('Admin', () => {
     describe('DELETE user', () => {
         it('should delete a client user', (done) => {
         const user = new User({ first_name: 'unitTest', last_name: "userDelete", email: 'unitTest@gmail.com', password: "password" });
-        user.save((err, savedClient) => {
-            chai.request(app)
+        user.save(async (err, savedClient) => {
+            await chai.request(app)
             .delete(`/api/user/client/${savedClient._id}`)
             .set('x-access-token', adminToken)
             .end((err, res) => {

@@ -20,7 +20,7 @@ describe('Querry', () => {
            }
         );
     });
-    
+
     after(async () => {
         await Query.deleteMany({});
     });

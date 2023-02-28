@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "coverage": "nyc npm run test",
+    "test": "mocha --exit",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary npm run test",
     "coveralls": "NODE_ENV=test nyc report --reporter=text-lcov | coveralls",
     "start": "nodemon server.js"
   },

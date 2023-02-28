@@ -73,7 +73,6 @@ describe('User', () => {
         });
     });
 
-    let count = 1
     describe('POST signup', () => {
         it('should register new client user', async () => {
             const res = await chai.request(app)

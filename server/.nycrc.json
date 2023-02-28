@@ -1,0 +1,24 @@
+{
+    "all": true,
+    "extension": [
+      ".js"
+    ],
+    "instrument": true,
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "dist/**",
+      "swagger/**",
+      "coverage/**"
+    ],
+    "check-coverage": true,
+    "per-file": true,
+    "statements": 90,
+    "branches": 85,
+    "functions": 90,
+    "lines": 90
+  }
+  
