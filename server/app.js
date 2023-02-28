@@ -167,9 +167,11 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const user = await User.findOne({ _id: decoded.user_id });
 
     const userId = user._id;
+
+    const articleId = req.params.id;
     
     const comment = new Comment({
-      articleId: req.params.id,
+      articleId: articleId,
       userId: userId,
       comment: req.body.comment,
     });
