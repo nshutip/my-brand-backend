@@ -167,11 +167,6 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const user = await User.findOne({ _id: decoded.user_id });
 
     const userId = user._id;
-
-    const articleId = req.params.id
-
-    console.log(req.params)
-    console.log(articleId)
     
     const comment = new Comment({
       articleId: req.params.id,
@@ -181,7 +176,7 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
 
     const savedComment = await comment.save();
 
-    const article = await Article.findByIdAndUpdate(
+    await Article.findByIdAndUpdate(
       req.params.id,
       { $push: { comments: savedComment._id } },
       { new: true },
