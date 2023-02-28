@@ -169,7 +169,7 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
     const userId = user._id;
     
     const comment = new Comment({
-      articleId: req.params.id,
+      articleId: req.params.id || req.body.articleId,
       userId: userId,
       comment: req.body.comment,
     });
