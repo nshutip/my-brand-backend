@@ -170,6 +170,8 @@ router.post("/articles/:id/comments", userAuth,async (req, res) => {
 
     const articleId = req.params.id;
 
+    console.log(articleId)
+
     if (articleId.match(/^[0-9a-fA-F]{24}$/)) {
       const comment = new Comment({
         articleId: articleId,
